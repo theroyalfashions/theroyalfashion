@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Royal Fashion — Luxury, Curated.</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top"><div class="announcement">FREE SHIPPING • CASH ON DELIVERY AVAILABLE</div>
+<nav><a class="brand" href="/"><span class="crown">♛</span><span>THE ROYAL <b>FASHION</b></span></a>
+<div class="navlinks"><a href="#collections">Collections</a><a href="#products">New Arrivals</a><a href="#story">Our Story</a></div>
+<button class="cartBtn" onclick="openCart()">Bag <span id="cartCount">0</span></button></nav></header>
+
+<main>
+<section class="hero"><div class="heroOverlay"></div><div class="heroText">
+<p class="eyebrow">THE NEW ROYAL EDIT</p><h1>Wear the<br><i>extraordinary.</i></h1>
+<p>Statement pieces, refined essentials and timeless style — curated for those who never settle for ordinary.</p>
+<a class="goldBtn" href="#products">SHOP THE COLLECTION</a></div></section>
+
+<section class="trust"><div><b>01</b><span>Premium Selection</span></div><div><b>02</b><span>Free Shipping</span></div><div><b>03</b><span>Cash on Delivery</span></div><div><b>04</b><span>Personal Support</span></div></section>
+
+<section id="collections" class="section"><div class="sectionHead"><p class="eyebrow">CURATED FOR YOU</p><h2>Explore the collections</h2></div>
+<div class="cats">
+<button onclick="filterCat('Mens Sunglasses')">Men's Sunglasses</button><button onclick="filterCat('Mens Watch')">Men's Watches</button><button onclick="filterCat('Mens Shoes')">Men's Shoes</button><button onclick="filterCat('Mens Tshirt')">Men's T-Shirts</button><button onclick="filterCat('Ladies Watch')">Ladies Watches</button><button onclick="filterCat('Ladies Shoes')">Ladies Shoes</button><button onclick="filterCat('Ladies Bags')">Ladies Bags</button><button onclick="filterCat('Wallet')">Wallets</button><button onclick="filterCat('Belt')">Belts</button></div></section>
+
+<section id="products" class="section productsSection"><div class="sectionHead row"><div><p class="eyebrow">SHOP NOW</p><h2>Latest arrivals</h2></div><div class="search"><input id="search" placeholder="Search products..." oninput="renderProducts()"></div></div>
+<div id="grid" class="grid"><div class="loading">Loading the collection…</div></div></section>
+
+<section id="story" class="story"><div><p class="eyebrow">THE ROYAL STANDARD</p><h2>Style that speaks<br><i>before you do.</i></h2><p>We believe fashion should feel effortless, elevated and unmistakably yours. Discover carefully selected pieces made to complete your everyday presence.</p></div></section>
+</main>
+
+<footer><div class="footerBrand">♛ THE ROYAL FASHION</div><p>Premium fashion, delivered to your door.</p><a href="https://wa.me/917990508016" target="_blank">WhatsApp: +91 79905 08016</a><a href="mailto:rehandayala1@gmail.com">rehandayala1@gmail.com</a><small>© 2026 The Royal Fashion. All rights reserved.</small></footer>
+
+<div id="cart" class="drawer"><div class="drawerHead"><h3>Your Bag</h3><button onclick="closeCart()">×</button></div><div id="cartItems"></div><div class="cartBottom"><div><span>Total</span><b id="cartTotal">₹0</b></div><button class="goldBtn" onclick="checkout()">CHECKOUT — COD</button></div></div>
+<div id="shade" class="shade" onclick="closeCart()"></div>
+<script src="/app.js"></script>
+</body></html>

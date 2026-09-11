@@ -1,0 +1,61 @@
+[
+  {
+    "id": "ORD-1789025102958",
+    "createdAt": "2026-09-10T07:25:02.958Z",
+    "status": "Pending",
+    "total": 6197,
+    "pincode": "400050",
+    "items": [
+      {
+        "price": 1899,
+        "size": "Standard",
+        "name": "Royal Sovereign Gold-Rim Optical Frames",
+        "id": "1001",
+        "qty": 1
+      },
+      {
+        "price": 2999,
+        "size": "UK 9",
+        "name": "Handcrafted Italian Leather Oxford Shoes",
+        "id": "1007",
+        "qty": 1
+      },
+      {
+        "price": 1299,
+        "size": "L",
+        "name": "Heavyweight 260GSM Royal Crest T-Shirt",
+        "id": "1009",
+        "qty": 1
+      }
+    ],
+    "city": "Mumbai",
+    "customer": "Arjun Kapoor",
+    "paymentMethod": "Cash on Delivery (COD)",
+    "state": "Maharashtra",
+    "address": "Flat 402, Royal Residency, Bandra West",
+    "phone": "9876543210"
+  },
+  {
+    "id": "ORD-1789046816559",
+    "createdAt": "2026-09-10T13:26:56.563Z",
+    "status": "Pending",
+    "customer": "Rehan",
+    "phone": "7990508016",
+    "alternativePhone": "",
+    "address": "Shcjcj jfk j",
+    "pincode": "395009",
+    "city": "Surat , Gujarat",
+    "state": "Surat , Gujarat",
+    "paymentMethod": "Cash on Delivery (COD)",
+    "items": [
+      {
+        "id": "1016",
+        "name": "Sartorial Textured Formal Leather Belt",
+        "price": 1099,
+        "qty": 1,
+        "size": "30-34 Waist"
+      }
+    ],
+    "total": 1099
+  }
+]
