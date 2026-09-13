@@ -34,6 +34,38 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+// Fallback image provider: If Render restarts and ephemeral disk is wiped, serve image directly from MongoDB Atlas!
+app.get("/uploads/:filename", async (req, res) => {
+    try {
+        const filename = path.basename(req.params.filename);
+        const localPath = path.join(UPLOADS_DIR, filename);
+
+        if (fs.existsSync(localPath)) {
+            return res.sendFile(localPath);
+        }
+
+        if (isMongoConnected) {
+            const img = await Image.findOne({ filename });
+            if (img && img.data) {
+                const buf = Buffer.isBuffer(img.data) ? img.data : Buffer.from(img.data.buffer || img.data);
+                try {
+                    fs.writeFileSync(localPath, buf);
+                } catch (writeErr) {
+                    // Ignore disk cache write failure
+                }
+                res.setHeader("Content-Type", img.contentType || "image/jpeg");
+                res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+                return res.send(buf);
+            }
+        }
+
+        res.status(404).send("Image not found");
+    } catch (err) {
+        console.error("Error serving image:", err.message);
+        res.status(500).send("Error loading image");
+    }
+});
+
 function readJSON(file) {
     try {
         return JSON.parse(fs.readFileSync(file, "utf8"));
@@ -127,6 +159,15 @@ const orderSchema = new mongoose.Schema({
 const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 
+const imageSchema = new mongoose.Schema({
+    filename: { type: String, unique: true, index: true },
+    contentType: { type: String, default: "image/jpeg" },
+    data: { type: Buffer, required: true },
+    size: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now }
+});
+const Image = mongoose.models.Image || mongoose.model("Image", imageSchema);
+
 if (process.env.MONGODB_URI) {
     mongoose.connect(process.env.MONGODB_URI)
         .then(async () => {
@@ -148,6 +189,34 @@ if (process.env.MONGODB_URI) {
                     if (localOrders.length > 0) {
                         await Order.insertMany(localOrders);
                         console.log(`🍃 Synced ${localOrders.length} local orders to MongoDB Atlas.`);
+                    }
+                }
+
+                if (fs.existsSync(UPLOADS_DIR)) {
+                    const files = fs.readdirSync(UPLOADS_DIR);
+                    for (const file of files) {
+                        const filePath = path.join(UPLOADS_DIR, file);
+                        const stat = fs.statSync(filePath);
+                        if (!stat.isFile()) continue;
+
+                        const exists = await Image.exists({ filename: file });
+                        if (!exists) {
+                            const buffer = fs.readFileSync(filePath);
+                            const ext = path.extname(file).toLowerCase();
+                            const mimeMap = {
+                                ".jpg": "image/jpeg",
+                                ".jpeg": "image/jpeg",
+                                ".png": "image/png",
+                                ".webp": "image/webp",
+                                ".gif": "image/gif"
+                            };
+                            await Image.create({
+                                filename: file,
+                                contentType: mimeMap[ext] || "image/jpeg",
+                                data: buffer,
+                                size: stat.size
+                            });
+                        }
                     }
                 }
             } catch (syncErr) {
@@ -187,19 +256,14 @@ async function getOrders() {
     return readJSON(ORDERS_FILE);
 }
 
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, UPLOADS_DIR);
     },
-
     filename: function (req, file, cb) {
-        const ext = path.extname(file.originalname);
-        const name =
-            Date.now() +
-            "-" +
-            Math.round(Math.random() * 1000000000) +
-            ext;
-
+        const ext = path.extname(file.originalname).toLowerCase();
+        const name = Date.now() + "-" + Math.round(Math.random() * 1000000000) + ext;
         cb(null, name);
     }
 });
@@ -208,7 +272,7 @@ const upload = multer({
     storage: storage,
     limits: {
         files: 10,
-        fileSize: 10 * 1024 * 1024
+        fileSize: 15 * 1024 * 1024
     }
 });
 
@@ -389,7 +453,7 @@ app.post(
     ]),
     async (req, res) => {
         try {
-            const products = getProducts();
+            
 
             let uploadedFiles = [];
 
@@ -401,9 +465,38 @@ app.post(
                 uploadedFiles = uploadedFiles.concat(req.files.image);
             }
 
-            const images = uploadedFiles.map(
-                file => "/uploads/" + file.filename
-            );
+            const images = [];
+            for (const file of uploadedFiles) {
+                const filename = file.filename;
+                const imageUrl = "/uploads/" + filename;
+                images.push(imageUrl);
+
+                if (isMongoConnected) {
+                    try {
+                        const buffer = fs.readFileSync(file.path);
+                        const ext = path.extname(filename).toLowerCase();
+                        const mimeMap = {
+                            ".jpg": "image/jpeg",
+                            ".jpeg": "image/jpeg",
+                            ".png": "image/png",
+                            ".webp": "image/webp",
+                            ".gif": "image/gif"
+                        };
+                        await Image.findOneAndUpdate(
+                            { filename: filename },
+                            {
+                                filename: filename,
+                                contentType: file.mimetype || mimeMap[ext] || "image/jpeg",
+                                data: buffer,
+                                size: file.size
+                            },
+                            { upsert: true }
+                        );
+                    } catch (err) {
+                        console.error("Failed to persist image to Atlas:", err.message);
+                    }
+                }
+            }
 
             let sizes = [];
             if (req.body.sizes) {
@@ -485,9 +578,38 @@ app.post(
     upload.array("images", 10),
     async (req, res) => {
         try {
-            const newImages = (req.files || []).map(
-                file => "/uploads/" + file.filename
-            );
+            const newImages = [];
+            for (const file of (req.files || [])) {
+                const filename = file.filename;
+                const imageUrl = "/uploads/" + filename;
+                newImages.push(imageUrl);
+
+                if (isMongoConnected) {
+                    try {
+                        const buffer = fs.readFileSync(file.path);
+                        const ext = path.extname(filename).toLowerCase();
+                        const mimeMap = {
+                            ".jpg": "image/jpeg",
+                            ".jpeg": "image/jpeg",
+                            ".png": "image/png",
+                            ".webp": "image/webp",
+                            ".gif": "image/gif"
+                        };
+                        await Image.findOneAndUpdate(
+                            { filename: filename },
+                            {
+                                filename: filename,
+                                contentType: file.mimetype || mimeMap[ext] || "image/jpeg",
+                                data: buffer,
+                                size: file.size
+                            },
+                            { upsert: true }
+                        );
+                    } catch (err) {
+                        console.error("Failed to persist image to Atlas:", err.message);
+                    }
+                }
+            }
 
             let product = null;
             if (isMongoConnected) {
