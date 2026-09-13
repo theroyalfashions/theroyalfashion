@@ -1,1 +1,180 @@
-[]
+[
+  {
+    "id": "1789225053839",
+    "name": "Ray_ban",
+    "category": "Mens Sunglasses",
+    "price": 999,
+    "oldPrice": 12999,
+    "description": "Premium Ray-Ban polarized sunglasses with a stylish design, UV protection, and glare-reducing lenses. Perfect for everyday wear, driving, travel, and a premium look.",
+    "image": "/uploads/1789225053135-394383828.jpg",
+    "images": [
+      "/uploads/1789225053135-394383828.jpg",
+      "/uploads/1789225053528-816970256.jpg",
+      "/uploads/1789225053530-765433009.jpg",
+      "/uploads/1789225053533-482573797.jpg",
+      "/uploads/1789225053830-669563898.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T14:57:33.839Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225150832",
+    "name": "Ray_ban 7701",
+    "category": "Mens Sunglasses",
+    "price": 999,
+    "oldPrice": 12999,
+    "description": "Premium Ray-Ban polarized sunglasses with a stylish design, UV protection, and glare-reducing lenses. Perfect for everyday wear, driving, travel, and a premium look.",
+    "image": "/uploads/1789225150297-412643757.jpg",
+    "images": [
+      "/uploads/1789225150297-412643757.jpg",
+      "/uploads/1789225150598-78535061.jpg",
+      "/uploads/1789225150821-450143582.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T14:59:10.832Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225206656",
+    "name": "Pra_da",
+    "category": "Mens Sunglasses",
+    "price": 999,
+    "oldPrice": 12999,
+    "description": "Premium Prada polarized sunglasses with a stylish design, UV protection, and glare-reducing lenses. Perfect for everyday wear, driving, travel, and a premium look.",
+    "image": "/uploads/1789225205695-609602330.jpg",
+    "images": [
+      "/uploads/1789225205695-609602330.jpg",
+      "/uploads/1789225205896-845625545.jpg",
+      "/uploads/1789225206098-283373123.jpg",
+      "/uploads/1789225206102-707378882.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T15:00:06.656Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225256044",
+    "name": "Tom_ford",
+    "category": "Mens Sunglasses",
+    "price": 999,
+    "oldPrice": 12999,
+    "description": "Premium Tomford polarized sunglasses with a stylish design, UV protection, and glare-reducing lenses. Perfect for everyday wear, driving, travel, and a premium look.",
+    "image": "/uploads/1789225256030-983533862.jpg",
+    "images": [
+      "/uploads/1789225256030-983533862.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T15:00:56.044Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225309326",
+    "name": "Ray_ban",
+    "category": "Mens Sunglasses",
+    "price": 999,
+    "oldPrice": 12999,
+    "description": "Premium Ray-Ban polarized sunglasses with a stylish design, UV protection, and glare-reducing lenses. Perfect for everyday wear, driving, travel, and a premium look.",
+    "image": "/uploads/1789225308395-385958334.jpg",
+    "images": [
+      "/uploads/1789225308395-385958334.jpg",
+      "/uploads/1789225308698-303259353.jpg",
+      "/uploads/1789225308811-930305929.jpg",
+      "/uploads/1789225308813-793795158.jpg",
+      "/uploads/1789225308830-977070316.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T15:01:49.326Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225446155",
+    "name": "Arm_ani exchange",
+    "category": "Belt",
+    "price": 1199,
+    "oldPrice": 15999,
+    "description": "Premium Armani Exchange belt with a stylish, elegant design and durable finish. Perfect for everyday wear and adding a sophisticated touch to any outfit.",
+    "image": "/uploads/1789225442714-294899640.jpg",
+    "images": [
+      "/uploads/1789225442714-294899640.jpg",
+      "/uploads/1789225444103-678127183.jpg",
+      "/uploads/1789225444917-49228897.jpg",
+      "/uploads/1789225445676-112954228.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T15:04:06.155Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225560408",
+    "name": "Vers_ace Dominus Automatic",
+    "category": "Mens Watch",
+    "price": 2750,
+    "oldPrice": 28999,
+    "description": "Elegant chain watch with a premium design and stylish finish. Perfect for daily wear, parties, and adding a classy touch to any outfit.",
+    "image": "/uploads/1789225559177-416436491.jpg",
+    "images": [
+      "/uploads/1789225559177-416436491.jpg",
+      "/uploads/1789225559791-814065295.jpg",
+      "/uploads/1789225559997-236447755.jpg",
+      "/uploads/1789225560205-376943654.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T15:06:00.408Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225608803",
+    "name": "Gu_cci premium belt",
+    "category": "Belt",
+    "price": 1199,
+    "oldPrice": 15999,
+    "description": "Premium Gucci belt with a stylish, elegant design and durable finish. Perfect for everyday wear and adding a sophisticated touch to any outfit.",
+    "image": "/uploads/1789225605873-164534982.jpg",
+    "images": [
+      "/uploads/1789225605873-164534982.jpg",
+      "/uploads/1789225607316-293859721.jpg",
+      "/uploads/1789225607616-758812742.jpg",
+      "/uploads/1789225608273-423825728.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T15:06:48.803Z",
+    "stock": 10
+  },
+  {
+    "id": "1789225739683",
+    "name": "Alo yoga Runner Triple White",
+    "category": "Mens Shoes",
+    "price": 3899,
+    "oldPrice": 56999,
+    "description": "Premium stylish shoes designed for comfort, durability, and everyday wear. Perfect for casual outings, parties, and completing your modern look.",
+    "image": "/uploads/1789225738233-595924403.jpg",
+    "images": [
+      "/uploads/1789225738233-595924403.jpg",
+      "/uploads/1789225738906-773860240.jpg",
+      "/uploads/1789225738915-914579714.jpg",
+      "/uploads/1789225739357-307320998.jpg"
+    ],
+    "sizes": [],
+    "featured": false,
+    "hidden": false,
+    "createdAt": "2026-09-12T15:08:59.683Z",
+    "stock": 10
+  }
+]

@@ -907,6 +907,71 @@
             letter-spacing: 0.5px;
         }
 
+        .badge-out-of-stock {
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 3px 7px;
+            border-radius: 4px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);
+            text-transform: uppercase;
+        }
+
+        .product-card.is-sold-out .card-media img {
+            filter: grayscale(0.4) opacity(0.85);
+        }
+
+        .product-card.is-sold-out .card-btn {
+            background: rgba(220, 38, 38, 0.15);
+            border-color: rgba(220, 38, 38, 0.35);
+            color: #f87171;
+        }
+
+        .sheet-stock-wrap {
+            margin: 6px 0 10px;
+        }
+
+        .badge-stock {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.4px;
+        }
+
+        .badge-stock.in-stock {
+            background: rgba(46, 213, 115, 0.12);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .badge-stock.low-stock {
+            background: rgba(255, 171, 0, 0.15);
+            color: #ffab00;
+            border: 1px solid rgba(255, 171, 0, 0.35);
+        }
+
+        .badge-stock.out-of-stock {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-buy-now.disabled-stock,
+        .btn-add-bag.disabled-stock {
+            background: #222 !important;
+            color: #666 !important;
+            border-color: #333 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            opacity: 0.65;
+        }
+
         .badge-rating {
             position: absolute;
             bottom: 8px;
@@ -2594,6 +2659,9 @@
                         <span class="detail-save" id="sheetSaveTag">SAVE ₹0</span>
                     </div>
 
+                    <!-- Live Stock Status Indicator -->
+                    <div id="sheetStockBadge" class="sheet-stock-wrap"></div>
+
                     <p style="font-size:12.5px;color:var(--text-sub);line-height:1.6;" id="sheetDesc">Description</p>
 
                     <!-- Dynamic Size Selector -->
@@ -2627,10 +2695,10 @@
 
                     <!-- CTAs -->
                     <div class="detail-actions-row">
-                        <button class="btn-buy-now" onclick="sheetBuyNow()">
+                        <button class="btn-buy-now" id="sheetBuyNowBtn" onclick="sheetBuyNow()">
                             ⚡ BUY NOW (COD)
                         </button>
-                        <button class="btn-add-bag" onclick="sheetAddToBag()">
+                        <button class="btn-add-bag" id="sheetAddBagBtn" onclick="sheetAddToBag()">
                             ADD TO BAG
                         </button>
                     </div>
@@ -2988,7 +3056,10 @@
             const sortBy = document.getElementById("sortSelect")?.value || "featured";
 
             let list = products.filter(p => {
-                const matchesCat = !activeCategory || (p.category && p.category.toLowerCase() === activeCategory.toLowerCase());
+                const matchesCat = !activeCategory || (p.category && (
+                    p.category.toLowerCase() === activeCategory.toLowerCase() ||
+                    p.category.toLowerCase().replace(/[^a-z0-9]/g, "") === activeCategory.toLowerCase().replace(/[^a-z0-9]/g, "")
+                ));
                 const fullStr = `${p.name} ${p.category} ${p.description || ""}`.toLowerCase();
                 const matchesQuery = !query || fullStr.includes(query);
                 return matchesCat && matchesQuery;
@@ -3026,20 +3097,23 @@
                 const sizes = (p.sizes && p.sizes.length) ? p.sizes : (CATEGORY_SIZES[p.category] || []);
                 const hasSizes = sizes && sizes.length > 0;
 
+                const stock = p.stock !== undefined ? Number(p.stock) : 10;
+                const isOutOfStock = stock <= 0;
+
                 const primaryImg = p.image || (p.images && p.images[0]) || "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=600&q=80";
 
                 return `
-                    <article class="product-card" onclick="openDetailSheet('${p.id}')">
+                    <article class="product-card ${isOutOfStock ? 'is-sold-out' : ''}" onclick="openDetailSheet('${p.id}')">
                         <div class="card-media">
                             <img src="${primaryImg}" alt="${esc(p.name)}" loading="lazy">
                             <div class="card-badges">
-                                ${hasDiscount ? `<span class="badge-discount">${discountPercent}% OFF</span>` : ""}
+                                ${isOutOfStock ? `<span class="badge-out-of-stock">SOLD OUT</span>` : (hasDiscount ? `<span class="badge-discount">${discountPercent}% OFF</span>` : "")}
                                 <span class="badge-cod">COD</span>
                             </div>
                             <button class="card-share-btn" title="Share Link" onclick="event.stopPropagation(); shareProductById('${p.id}')" aria-label="Share Link">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                             </button>
-                            <div class="badge-rating">★ 4.9</div>
+                            <div class="badge-rating">${isOutOfStock ? 'OUT OF STOCK' : '★ 4.9'}</div>
                         </div>
 
                         <div class="card-info">
@@ -3059,7 +3133,7 @@
                             </div>
 
                             <button class="card-btn" onclick="event.stopPropagation(); openDetailSheet('${p.id}')">
-                                View Piece ➔
+                                ${isOutOfStock ? '⚠️ Sold Out — View' : 'View Piece ➔'}
                             </button>
                         </div>
                     </article>
@@ -3091,6 +3165,47 @@
             } else {
                 oldPriceEl.style.display = "none";
                 saveTagEl.style.display = "none";
+            }
+
+            // Live Stock Status & CTAs
+            const stock = p.stock !== undefined ? Number(p.stock) : 10;
+            const isOutOfStock = stock <= 0;
+            const stockBadgeEl = document.getElementById("sheetStockBadge");
+            const addBagBtn = document.getElementById("sheetAddBagBtn");
+            const buyNowBtn = document.getElementById("sheetBuyNowBtn");
+
+            if (stockBadgeEl) {
+                if (isOutOfStock) {
+                    stockBadgeEl.innerHTML = `<span class="badge-stock out-of-stock">⚠️ Sold Out / Currently Out of Stock (0 Pcs)</span>`;
+                } else if (stock <= 5) {
+                    stockBadgeEl.innerHTML = `<span class="badge-stock low-stock">🔥 Only ${stock} piece${stock > 1 ? 's' : ''} left in stock!</span>`;
+                } else {
+                    stockBadgeEl.innerHTML = `<span class="badge-stock in-stock">✓ In Stock (${stock} Pieces Available)</span>`;
+                }
+            }
+
+            if (isOutOfStock) {
+                if (addBagBtn) {
+                    addBagBtn.disabled = true;
+                    addBagBtn.classList.add("disabled-stock");
+                    addBagBtn.textContent = "OUT OF STOCK";
+                }
+                if (buyNowBtn) {
+                    buyNowBtn.disabled = true;
+                    buyNowBtn.classList.add("disabled-stock");
+                    buyNowBtn.textContent = "SOLD OUT";
+                }
+            } else {
+                if (addBagBtn) {
+                    addBagBtn.disabled = false;
+                    addBagBtn.classList.remove("disabled-stock");
+                    addBagBtn.textContent = "ADD TO BAG";
+                }
+                if (buyNowBtn) {
+                    buyNowBtn.disabled = false;
+                    buyNowBtn.classList.remove("disabled-stock");
+                    buyNowBtn.textContent = "⚡ BUY NOW (COD)";
+                }
             }
 
             document.getElementById("sheetDesc").textContent = p.description || "Crafted with the highest attention to luxury, materials, and timeless royal finishing.";
@@ -3224,6 +3339,11 @@
 
         function sheetAddToBag() {
             if (!currentDetailProduct) return;
+            const stock = currentDetailProduct.stock !== undefined ? Number(currentDetailProduct.stock) : 10;
+            if (stock <= 0) {
+                showToast("This piece is currently out of stock", "⚠️");
+                return;
+            }
             const sizes = (currentDetailProduct.sizes && currentDetailProduct.sizes.length) ? currentDetailProduct.sizes : (CATEGORY_SIZES[currentDetailProduct.category] || []);
             const chosenSize = document.getElementById("selectedSize").value;
 
@@ -3239,6 +3359,11 @@
 
         function sheetBuyNow() {
             if (!currentDetailProduct) return;
+            const stock = currentDetailProduct.stock !== undefined ? Number(currentDetailProduct.stock) : 10;
+            if (stock <= 0) {
+                showToast("This piece is currently out of stock", "⚠️");
+                return;
+            }
             const sizes = (currentDetailProduct.sizes && currentDetailProduct.sizes.length) ? currentDetailProduct.sizes : (CATEGORY_SIZES[currentDetailProduct.category] || []);
             const chosenSize = document.getElementById("selectedSize").value;
 
@@ -3265,8 +3390,18 @@
             const p = products.find(x => String(x.id) === String(productId));
             if (!p) return;
 
+            const stock = p.stock !== undefined ? Number(p.stock) : 10;
+            if (stock <= 0) {
+                showToast("Sorry, this piece is currently out of stock!", "⚠️");
+                return;
+            }
+
             const existing = cart.find(x => String(x.id) === String(productId) && (x.selectedSize || "") === size);
             if (existing) {
+                if (existing.qty >= stock) {
+                    showToast(`Cannot add more: Only ${stock} pcs available in stock.`, "⚠️");
+                    return;
+                }
                 existing.qty++;
             } else {
                 cart.push({
@@ -3288,6 +3423,14 @@
 
         function changeQty(index, delta) {
             if (!cart[index]) return;
+            if (delta > 0) {
+                const p = products.find(x => String(x.id) === String(cart[index].id));
+                const stock = p && p.stock !== undefined ? Number(p.stock) : 10;
+                if (cart[index].qty + delta > stock) {
+                    showToast(`Only ${stock} pcs available in stock.`, "⚠️");
+                    return;
+                }
+            }
             cart[index].qty += delta;
             if (cart[index].qty <= 0) {
                 cart.splice(index, 1);
@@ -3480,6 +3623,9 @@
                 if (data.ok || data.success) {
                     const orderId = data.orderId || (data.order && data.order.id) || ("ORD-" + Date.now());
                     lastPlacedOrder = { ...orderPayload, orderId };
+
+                    // Refresh products in background to immediately reflect reduced stock
+                    loadProducts();
 
                     // Clear cart
                     cart = [];

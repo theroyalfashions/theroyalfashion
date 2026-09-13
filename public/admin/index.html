@@ -134,6 +134,57 @@ body{
 .login-btn:hover{
     background:transparent;
     color:var(--gold);
+    }
+
+    .password-input-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+    width:100%;
+}
+.password-input-wrap input{
+    padding-right:48px !important;
+}
+
+.password-toggle-btn{
+    position:absolute;
+    right:10px;
+    background:transparent;
+    border:none;
+    color:#888;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px;
+    transition:color 0.2s ease, transform 0.15s ease;
+}
+
+.password-toggle-btn:hover{
+    color:var(--gold);
+    transform:scale(1.1);
+}
+
+.stock-pill{
+    display:inline-flex;
+    align-items:center;
+    padding:4px 9px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.5px;
+}
+
+.stock-pill.in-stock{
+    background:rgba(46, 213, 115, 0.12);
+    color:#2ed573;
+    border:1px solid rgba(46, 213, 115, 0.3);
+}
+
+.stock-pill.out-of-stock{
+    background:rgba(255, 71, 87, 0.18);
+    color:#ff4757;
+    border:1px solid rgba(255, 71, 87, 0.45);
 }
 
 .login-error{
@@ -972,13 +1023,28 @@ tr:hover td{
                 ADMIN PASSWORD
             </label>
 
-            <input
-                type="password"
-                id="loginPassword"
-                placeholder="Enter password"
-                autocomplete="current-password"
-                required
-            >
+            <div class="password-input-wrap">
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                    required
+                >
+                <button
+                    type="button"
+                    class="password-toggle-btn"
+                    id="toggleLoginPassBtn"
+                    onclick="togglePasswordVisibility('loginPassword', this)"
+                    title="Show Password"
+                    aria-label="Show password"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
 
 
             <div
@@ -1370,6 +1436,26 @@ tr:hover td{
                         </div>
 
 
+                        <!-- STOCK -->
+
+                        <div class="form-group">
+
+                            <label>
+                                STOCK QUANTITY *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="productStock"
+                                placeholder="Example: 10"
+                                min="0"
+                                value="10"
+                                required
+                            >
+
+                        </div>
+
+
                         <!-- DESCRIPTION -->
 
                         <div class="form-group full">
@@ -1700,6 +1786,25 @@ tr:hover td{
                 </div>
 
 
+                <!-- STOCK -->
+
+                <div class="form-group">
+
+                    <label>
+                        STOCK QUANTITY *
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editProductStock"
+                        min="0"
+                        placeholder="e.g. 10"
+                        required
+                    >
+
+                </div>
+
+
                 <div class="form-group full">
 
                     <label>
@@ -1791,54 +1896,109 @@ let selectedImages = [];
 
 
 /* =====================================================
-   LOGIN
+   PASSWORD VISIBILITY TOGGLE
 ===================================================== */
 
-function login(event){
+function togglePasswordVisibility(inputId, btn){
+    const input = document.getElementById(inputId);
+    if(!input) return;
 
-    event.preventDefault();
-
-    const username =
-        document
-            .getElementById("loginUsername")
-            .value
-            .trim();
-
-    const password =
-        document
-            .getElementById("loginPassword")
-            .value;
-
-    /*
-       IMPORTANT:
-       These credentials match the Basic Auth
-       credentials configured in your server.js.
-    */
-
-    if(
-        username === "admin" &&
-        password === "change-this-password"
-    ){
-
-        sessionStorage.setItem(
-            "royalAdminLoggedIn",
-            "true"
-        );
-
-        showAdmin();
-
-    }else{
-
-        document
-            .getElementById("loginError")
-            .innerText =
-            "Invalid username or password.";
-
+    if(input.type === "password"){
+        input.type = "text";
+        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+        btn.setAttribute("title", "Hide Password");
+    } else {
+        input.type = "password";
+        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+        btn.setAttribute("title", "Show Password");
     }
-
 }
 
 
+/* =====================================================
+   QUICK STOCK UPDATE
+===================================================== */
+
+async function quickUpdateStock(id, currentStock){
+    const entered = prompt("Enter new stock quantity for this product (Example: 10 or 0 for Out of Stock):", currentStock !== undefined ? currentStock : 10);
+    if(entered === null) return;
+
+    const newStock = parseInt(entered.trim(), 10);
+    if(isNaN(newStock) || newStock < 0){
+        showToast("Please enter a valid stock number (0 or higher).");
+        return;
+    }
+
+    try{
+        const response = await fetch("/api/admin/products/" + encodeURIComponent(id) + "/stock", {
+            method: "POST",
+            headers: {
+                "Authorization": getAuthHeader(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ stock: newStock })
+        });
+
+        if(!response.ok) throw new Error("Could not update stock");
+
+        showToast(`Stock updated to ${newStock} pcs.`);
+        await loadProducts();
+    }catch(err){
+        showToast(err.message || "Failed to update stock");
+    }
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+function login(event) {
+    event.preventDefault();
+
+    const username = document
+        .getElementById("loginUsername")
+        .value
+        .trim();
+
+    const password = document
+        .getElementById("loginPassword")
+        .value;
+
+    const auth = btoa(username + ":" + password);
+
+    fetch("/api/admin-check", {
+        method: "GET",
+        headers: {
+            "Authorization": "Basic " + auth
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            sessionStorage.setItem(
+                "royalAdminLoggedIn",
+                "true"
+            );
+            sessionStorage.setItem(
+                "royalAdminAuth",
+                "Basic " + auth
+            );
+
+            showAdmin();
+        } else {
+            document
+                .getElementById("loginError")
+                .innerText =
+                "Invalid username or password.";
+        }
+    })
+    .catch(() => {
+        document
+            .getElementById("loginError")
+            .innerText =
+            "Server connection error.";
+    });
+}
 /* =====================================================
    SHOW ADMIN
 ===================================================== */
@@ -1868,6 +2028,9 @@ function logout(){
 
     sessionStorage.removeItem(
         "royalAdminLoggedIn"
+    );
+    sessionStorage.removeItem(
+        "royalAdminAuth"
     );
 
     location.reload();
@@ -2108,6 +2271,10 @@ function renderProductTable(){
                     </th>
 
                     <th>
+                        STOCK
+                    </th>
+
+                    <th>
                         PHOTOS
                     </th>
 
@@ -2186,6 +2353,28 @@ function renderProductTable(){
                                     :
                                     ""
                                 }
+
+                            </td>
+
+
+                            <td>
+
+                                <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
+                                    ${
+                                        (product.stock !== undefined && Number(product.stock) > 0)
+                                        ? `<span class="stock-pill in-stock">${product.stock} IN STOCK</span>`
+                                        : `<span class="stock-pill out-of-stock">OUT OF STOCK (0)</span>`
+                                    }
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline btn-small"
+                                        style="padding:3px 8px;font-size:10px;border-color:#444;"
+                                        title="Quick update stock"
+                                        onclick="quickUpdateStock('${product.id}', ${product.stock !== undefined ? product.stock : 10})"
+                                    >
+                                        ✏️ Edit Stock
+                                    </button>
+                                </div>
 
                             </td>
 
@@ -2535,6 +2724,12 @@ async function saveProduct(event){
         );
 
 
+        formData.append(
+            "stock",
+            document.getElementById("productStock")?.value || "10"
+        );
+
+
         selectedImages.forEach(file => {
 
             formData.append(
@@ -2636,6 +2831,8 @@ function resetProductForm(){
         .innerText =
         "Add New Product";
 
+    const stockEl = document.getElementById("productStock");
+    if(stockEl) stockEl.value = "10";
 }
 
 
@@ -2645,14 +2842,7 @@ function resetProductForm(){
 
 function getAuthHeader(){
 
-    const credentials =
-        "admin:change-this-password";
-
-
-    return (
-        "Basic " +
-        btoa(credentials)
-    );
+    return sessionStorage.getItem("royalAdminAuth") || "";
 
 }
 
@@ -2727,6 +2917,11 @@ function editProduct(id){
         .checked =
         Boolean(product.pinned);
 
+    document
+        .getElementById("editProductStock")
+        .value =
+        product.stock !== undefined ? product.stock : 10;
+
 
     document
         .getElementById("editModal")
@@ -2797,6 +2992,15 @@ async function updateProduct(event){
                     .getElementById("editProductComparePrice")
                     .value
             ) || 0,
+
+        stock:
+            Math.max(
+                0,
+                parseInt(
+                    document.getElementById("editProductStock").value,
+                    10
+                ) || 0
+            ),
 
         description:
             document
